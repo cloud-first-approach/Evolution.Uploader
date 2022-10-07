@@ -54,5 +54,5 @@ jobs:
       
       - name : docker push
         run: |
-          docker push rohitrustagi007/evo_identity:latest
+          docker push rohitrustagi007/evo_uploader:latest
 
