@@ -7,7 +7,10 @@ using Serilog.Sinks.SystemConsole.Themes;
 using Serilog;
 using Uploader.Api;
 using Uploader.Api.Middlewares;
-
+using Uploader.Api.Services;
+using Amazon.S3;
+using Amazon.S3.Transfer;
+using Google.Api;
 
 Log.Logger = new LoggerConfiguration().MinimumLevel
                .Debug()
@@ -54,6 +57,11 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers().AddDapr();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IStorageService, StorageService>();
+
+builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
+builder.Services.AddAWSService<IAmazonS3>();
+builder.Services.AddTransient<TransferUtility>();
 
 var app = builder.Build();
 

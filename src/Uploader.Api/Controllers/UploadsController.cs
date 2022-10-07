@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Uploader.Api.Models;
+using Uploader.Api.Services;
+using Uploader.Api.Utilities;
 
 namespace Uploader.Api.Controllers
 {
@@ -9,10 +11,12 @@ namespace Uploader.Api.Controllers
     {
 
         private readonly ILogger<UploadsController> _logger;
+        private readonly IStorageService _storageService;
 
-        public UploadsController(ILogger<UploadsController> logger)
+        public UploadsController(ILogger<UploadsController> logger, IStorageService storageService)
         {
             _logger = logger;
+            _storageService = storageService;
         }
 
         [HttpGet(Name = "GetVideos")]
@@ -28,31 +32,16 @@ namespace Uploader.Api.Controllers
         [HttpPost(Name = "SaveVideos")]
         public async Task<IActionResult> Post([FromForm] UploadVideoRequestModel uploadVideoRequest)
         {
-            var files = Request.Form.Files;
-            if (!files.Any())
+            if (!Validations.IsValidVideoFile(uploadVideoRequest.File))
             {
-                return  BadRequest("No File found to Upload");
-            }
-            
-            long size = files.Sum(f => f.Length);
-
-            foreach (var formFile in files)
-            {
-                if (formFile.Length > 0)
-                {
-                    var filePath = Path.GetTempFileName();
-
-                    using (var stream = System.IO.File.Create(filePath))
-                    {
-                        await formFile.CopyToAsync(stream);
-                    }
-                }
+                return BadRequest("Invalid file, .mp4 is allowed with max size for 102400");
             }
 
-            // Process uploaded files
-            // Don't rely on or trust the FileName property without validation.
+            await _storageService.SaveVideo(uploadVideoRequest);
 
-            return Ok(new { count = files.Count, size });
+            return Ok(new { uploadVideoRequest.File.Length });
         }
     }
+
+
 }
