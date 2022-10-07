@@ -9,7 +9,7 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["src/Uploader.Api/Uploader.Api.csproj", "src/Uploader.Api/"]
 RUN dotnet restore "src/Uploader.Api/Uploader.Api.csproj"
-COPY . .
+COPY . "/src/src/Uploader.Api"
 WORKDIR "/src/src/Uploader.Api"
 RUN dotnet build "Uploader.Api.csproj" -c Release -o /app/build
 
