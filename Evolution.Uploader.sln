@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.32804.182
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F1B63E89-4B0F-457D-9D3C-881489FF994C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uploader.Api", "src\Uploader.Api\Uploader.Api.csproj", "{093C3017-73DC-4355-A6B7-1A9FFEC49F70}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{093C3017-73DC-4355-A6B7-1A9FFEC49F70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{093C3017-73DC-4355-A6B7-1A9FFEC49F70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{093C3017-73DC-4355-A6B7-1A9FFEC49F70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{093C3017-73DC-4355-A6B7-1A9FFEC49F70}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{093C3017-73DC-4355-A6B7-1A9FFEC49F70} = {F1B63E89-4B0F-457D-9D3C-881489FF994C}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {62F6DD46-B78B-487A-94AA-B2732DC1161E}
+	EndGlobalSection
+EndGlobal
