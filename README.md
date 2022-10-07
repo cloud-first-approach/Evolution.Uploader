@@ -8,6 +8,11 @@ TODO: Guide users through getting your code up and running on their own system. 
 3.	Latest releases
 4.	API references
 
+git branch -m master main
+git fetch origin
+git branch -u origin/main main
+git remote set-head origin -a
+
 
 ## Local Development
 
