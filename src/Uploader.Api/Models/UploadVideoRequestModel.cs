@@ -4,6 +4,6 @@ namespace Uploader.Api.Models
     {
         public DateTime ActualCreatedDate { get; set; }
 
-        
+        public string Name { get; set; }
     }
 }
