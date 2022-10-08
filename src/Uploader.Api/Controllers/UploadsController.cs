@@ -1,3 +1,4 @@
+using Dapr.Client;
 using Microsoft.AspNetCore.Mvc;
 using Uploader.Api.Models;
 using Uploader.Api.Services;
@@ -12,11 +13,12 @@ namespace Uploader.Api.Controllers
 
         private readonly ILogger<UploadsController> _logger;
         private readonly IStorageService _storageService;
-
-        public UploadsController(ILogger<UploadsController> logger, IStorageService storageService)
+        private readonly DaprClient _daprClient;
+        public UploadsController(ILogger<UploadsController> logger, IStorageService storageService, DaprClient daprClient)
         {
             _logger = logger;
             _storageService = storageService;
+            _daprClient = daprClient;
         }
 
         [HttpGet(Name = "GetVideos")]
@@ -37,9 +39,17 @@ namespace Uploader.Api.Controllers
                 return BadRequest("Invalid file, .mp4 is allowed with max size for 102400");
             }
 
-            await _storageService.UploadVideoToS3BucketAsync(uploadVideoRequest);
+           var url =  await _storageService.UploadVideoToS3BucketAsync(uploadVideoRequest);
 
-            return Ok(new { uploadVideoRequest.File.Length });
+            var reponse = new UploadVideoResponseModel()
+            {
+                Url = url,
+                Id = url
+            };
+
+            await _daprClient.PublishEventAsync<UploadVideoResponseModel>("pubsub", "upload", reponse);
+
+            return Ok(reponse);
         }
     }
 

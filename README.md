@@ -24,8 +24,8 @@ dotnet ef database update InitialCreate
 docker pull mcr.microsoft.com/mssql/server
 docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=password@1" -p 1433:1433 --name sql -d mcr.microsoft.com/mssql/server:2017-latest
 
-dapr run --app-id identity --app-port 1000 -- dotnet run
-dapr run --app-id identity --app-port 1000 --components-path ../../deploy/dapr/ -- dotnet run
+dapr run --app-id uploader --app-port 2000 -- dotnet run
+dapr run --app-id identity --app-port 2000 --components-path ../../deploy/dapr/ -- dotnet run
 
 ```
 
