@@ -37,7 +37,7 @@ namespace Uploader.Api.Controllers
                 return BadRequest("Invalid file, .mp4 is allowed with max size for 102400");
             }
 
-            await _storageService.SaveVideo(uploadVideoRequest);
+            await _storageService.UploadVideoToS3BucketAsync(uploadVideoRequest);
 
             return Ok(new { uploadVideoRequest.File.Length });
         }

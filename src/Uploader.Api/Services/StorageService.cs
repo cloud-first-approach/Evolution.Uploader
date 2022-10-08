@@ -50,8 +50,6 @@ namespace Uploader.Api.Services
                     InputStream = file.OpenReadStream(),
                     Key = trustedStorageName,
                     BucketName = bucketName,
-                    CannedACL = S3CannedACL.PublicRead, // Ensure the file is read-only to allow users view their pictures
-                    PartSize = 6291456
                 };
 
 

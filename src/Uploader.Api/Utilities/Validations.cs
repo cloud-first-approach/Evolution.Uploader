@@ -20,7 +20,7 @@
             }
 
             // Check if file size is greater than permitted limit
-            if (file.Length > 1024000) // 6MB
+            if (file.Length > Int32.MaxValue) // 6MB
             {
                 return false;
             }
