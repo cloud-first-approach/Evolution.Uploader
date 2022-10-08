@@ -69,7 +69,6 @@ builder.Services.AddHttpClient();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers().AddDapr();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IStorageService, StorageService>();
 
 builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
