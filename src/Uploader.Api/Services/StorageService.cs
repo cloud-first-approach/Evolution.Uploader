@@ -5,6 +5,9 @@ using Uploader.Api.Models;
 using Uploader.Api.AppSettings;
 using Uploader.Api.Services.Models;
 using Microsoft.Extensions.Options;
+using Amazon.S3.Model;
+using Microsoft.Extensions.Logging;
+using System.Security.AccessControl;
 
 namespace Uploader.Api.Services
 {
@@ -36,7 +39,7 @@ namespace Uploader.Api.Services
 
         }
 
-        public async Task<string> UploadVideoToS3BucketAsync(UploadVideoRequestModel requestDto)
+        public async Task<UploadVideoResponseModel> UploadVideoToS3BucketAsync(UploadVideoRequestModel requestDto)
         {
             try
             {
@@ -47,7 +50,7 @@ namespace Uploader.Api.Services
                 var trustedFileName = WebUtility.HtmlEncode(file.FileName);
                 var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
                 var randomFileName = Path.GetRandomFileName();
-                var trustedStorageKey = _storageSettings.BucketFolder + randomFileName + ext;
+                var trustedStorageKey = $"{_storageSettings.BucketFolder}/{randomFileName}{ext}";
 
                 // Create the image object to be uploaded in memory
                 var transferUtilityRequest = new TransferUtilityUploadRequest()
@@ -64,7 +67,10 @@ namespace Uploader.Api.Services
 
                 _logger.LogInformation("File uploaded to Amazon S3 bucket successfully");
 
-                return trustedStorageKey;
+                return new UploadVideoResponseModel() { 
+                        Bucketkey = trustedStorageKey, 
+                        BucketName=bucketName,
+                };
             }
             catch (Exception ex) when (ex is NullReferenceException)
             {
@@ -81,13 +87,14 @@ namespace Uploader.Api.Services
 
         public async Task<GetAllVideosResponseModel> GetAllVideos(GetAllVideosRequestModel videoRequestModel)
         {
-            var finalRes = new GetAllVideosResponseModel()
-            {
-                Videos = new List<VideoData>()
-            };
-            _logger.LogInformation(_storageSettings.BucketName);
-            var response = await _transferUtility.S3Client.ListObjectsAsync(_storageSettings.BucketName);
-            _logger.LogInformation(response.ContentLength.ToString());
+
+            var response = await S3Client.ListObjectsV2Async(new ListObjectsV2Request() { 
+                BucketName = _storageSettings.BucketName,
+                MaxKeys = 10,
+                Prefix = _storageSettings.BucketFolder
+            });
+
+            var Videos = new List<VideoData>();
             foreach (var obj in response.S3Objects)
             {
                 var data = new VideoData()
@@ -96,10 +103,31 @@ namespace Uploader.Api.Services
                     Size = obj.Size,
                     LastModified = obj.LastModified
                 };
+                Videos.Add(data);
             }
 
-            return finalRes;
+            return new GetAllVideosResponseModel()
+            {
+                Videos = Videos
+            }; 
 
+        }
+
+        public async Task<GetVideoDetailsResponseModel> GetVideoDetails(GetVideoDetailsRequestModel videoRequestModel)
+        {
+            var response = await S3Client.GetObjectAsync(_storageSettings.BucketName,videoRequestModel.Key);
+
+            // await response.WriteResponseStreamToFileAsync($"{filePath}\\{objectName}", true, System.Threading.CancellationToken.None);
+
+            var details = new GetVideoDetailsResponseModel()
+            {
+                Key = response.Key,
+                LastModified = response.LastModified,
+                Size = response.ContentLength
+            };
+            
+
+            return details;
         }
     }
 }
