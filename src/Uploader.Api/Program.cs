@@ -11,6 +11,9 @@ using Uploader.Api.Services;
 using Amazon.S3;
 using Amazon.S3.Transfer;
 using Google.Api;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.AspNetCore.Http.Features;
+using Uploader.Api.AppSettings;
 
 Log.Logger = new LoggerConfiguration().MinimumLevel
                .Debug()
@@ -50,18 +53,34 @@ builder.Host.UseMetricsWebTracking()
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.Configure<KestrelServerOptions>(options =>
+{
+    options.Limits.MaxRequestBodySize = Int32.MaxValue; // if don't set default value is: 30 MB
+});
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MemoryBufferThreshold = Int32.MaxValue;
+    options.MultipartBoundaryLengthLimit = Int32.MaxValue;
+    options.MultipartBodyLengthLimit = Int32.MaxValue;
+    options.MultipartHeadersLengthLimit = Int32.MaxValue;
+});
 
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddHttpClient();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers().AddDapr();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddControllersWithViews();
+
+builder.Services.AddOptions<AuthSettings>().BindConfiguration("AuthSettings");
+builder.Services.AddOptions<StorageSettings>().BindConfiguration("StorageSettings");
+
 builder.Services.AddScoped<IStorageService, StorageService>();
 
 builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
 builder.Services.AddAWSService<IAmazonS3>();
 builder.Services.AddTransient<TransferUtility>();
+
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 

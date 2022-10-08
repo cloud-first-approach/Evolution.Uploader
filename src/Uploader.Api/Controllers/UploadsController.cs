@@ -1,4 +1,8 @@
+using Dapr.Client;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Uploader.Api.AppSettings;
 using Uploader.Api.Models;
 using Uploader.Api.Services;
 using Uploader.Api.Utilities;
@@ -12,24 +16,32 @@ namespace Uploader.Api.Controllers
 
         private readonly ILogger<UploadsController> _logger;
         private readonly IStorageService _storageService;
-
-        public UploadsController(ILogger<UploadsController> logger, IStorageService storageService)
+        private readonly DaprClient _daprClient;
+        private readonly StorageSettings _storageSettings;
+        public UploadsController(ILogger<UploadsController> logger, IStorageService storageService, DaprClient daprClient, IOptions<StorageSettings> storageSettings)
         {
             _logger = logger;
             _storageService = storageService;
+            _daprClient = daprClient;
+            _storageSettings = storageSettings.Value;
         }
 
-        [HttpGet(Name = "GetVideos")]
-        public IEnumerable<UploadVideoRequestModel> Get()
+        [HttpGet(Name = "GetAllUploadedVideos")]
+        public async Task<IActionResult> GetAll()
         {
-            return Enumerable.Range(1, 5).Select(index => new UploadVideoRequestModel
-            {
-                ActualCreatedDate = DateTime.Now.AddDays(index),
-            })
-            .ToArray();
+            var response = await _storageService.GetAllVideos(new Services.Models.GetAllVideosRequestModel());
+            return Ok(response);
         }
 
-        [HttpPost(Name = "SaveVideos")]
+        [Route("video")]
+        [HttpGet(Name = "GetVideoDetail")]
+        public async Task<IActionResult> Get([FromQuery] string key)
+        {
+            var response = await _storageService.GetVideoDetails(new Services.Models.GetVideoDetailsRequestModel() { Key = key,BucketName = _storageSettings.BucketName });
+            return Ok(response);
+        }
+
+        [HttpPost(Name = "SaveVideo")]
         public async Task<IActionResult> Post([FromForm] UploadVideoRequestModel uploadVideoRequest)
         {
             if (!Validations.IsValidVideoFile(uploadVideoRequest.File))
@@ -37,9 +49,14 @@ namespace Uploader.Api.Controllers
                 return BadRequest("Invalid file, .mp4 is allowed with max size for 102400");
             }
 
-            await _storageService.SaveVideo(uploadVideoRequest);
+            uploadVideoRequest.BucketFolder = _storageSettings.BucketFolder;
+            uploadVideoRequest.BucketName = _storageSettings.BucketName;
 
-            return Ok(new { uploadVideoRequest.File.Length });
+            var reponse = await _storageService.UploadVideoToS3BucketAsync(uploadVideoRequest);
+
+            await _daprClient.PublishEventAsync<UploadVideoResponseModel>("pubsub", "upload", reponse);
+
+            return Ok(reponse);
         }
     }
 

@@ -2,22 +2,28 @@
 using Amazon.S3.Transfer;
 using System.Net;
 using Uploader.Api.Models;
+using Uploader.Api.AppSettings;
+using Uploader.Api.Services.Models;
+using Microsoft.Extensions.Options;
+using Amazon.S3.Model;
+using Microsoft.Extensions.Logging;
+using System.Security.AccessControl;
 
 namespace Uploader.Api.Services
 {
     public class StorageService : IStorageService
     {
         private readonly TransferUtility _transferUtility;
-        private readonly IConfiguration _config;
         private readonly ILogger<StorageService> _logger;
+
 
         IAmazonS3 S3Client { get; set; }
         public StorageService(IAmazonS3 s3Client, TransferUtility transferUtility, IConfiguration configuration, ILogger<StorageService> logger)
         {
             S3Client = s3Client;
             _transferUtility = transferUtility;
-            _config = configuration;
             _logger = logger;
+
         }
         public async Task SaveVideo(UploadVideoRequestModel videoRequestModel)
         {
@@ -31,41 +37,33 @@ namespace Uploader.Api.Services
 
         }
 
-        public async Task<string> UploadVideoToS3BucketAsync(UploadVideoRequestModel requestDto)
+        public async Task<UploadVideoResponseModel> UploadVideoToS3BucketAsync(UploadVideoRequestModel request)
         {
             try
             {
-                var file = requestDto.File;
-                string bucketName = "evolution-video-uploads";
+                // Rename file to random string to prevent injection and similar security threats
+                var file = request.File;
+                var randomFileName = Path.GetRandomFileName();
 
-                            // Rename file to random string to prevent injection and similar security threats
                 var trustedFileName = WebUtility.HtmlEncode(file.FileName);
                 var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
-                var randomFileName = Path.GetRandomFileName();
-                var trustedStorageName = "files/" + randomFileName + ext;
 
-                // Create the image object to be uploaded in memory
+                var trustedStorageKey = $"{request.BucketFolder}/{randomFileName}{ext}";
+
                 var transferUtilityRequest = new TransferUtilityUploadRequest()
                 {
                     InputStream = file.OpenReadStream(),
-                    Key = trustedStorageName,
-                    BucketName = bucketName,
-                    CannedACL = S3CannedACL.PublicRead, // Ensure the file is read-only to allow users view their pictures
-                    PartSize = 6291456
+                    Key = trustedStorageKey,
+                    BucketName = request.BucketName,
                 };
-
 
                 transferUtilityRequest.Metadata.Add("originalFileName", trustedFileName);
 
-               // S3Client.UploadObjectFromStreamAsync(
                 await _transferUtility.UploadAsync(transferUtilityRequest);
-
-                // Retrieve Url
-                var ImageUrl = GenerateAwsFileUrl(bucketName, trustedStorageName);
 
                 _logger.LogInformation("File uploaded to Amazon S3 bucket successfully");
 
-                return ImageUrl;
+                return new UploadVideoResponseModel() { Bucketkey = trustedStorageKey, BucketName = request.BucketName, };
             }
             catch (Exception ex) when (ex is NullReferenceException)
             {
@@ -80,25 +78,50 @@ namespace Uploader.Api.Services
 
         }
 
-        public string GenerateAwsFileUrl(string bucketName, string key, bool useRegion = true)
+        public async Task<GetAllVideosResponseModel> GetAllVideos(GetAllVideosRequestModel videoRequestModel)
         {
-            // URL patterns: Virtual hosted style and path style
-            // Virtual hosted style
-            // 1. http://[bucketName].[regionName].amazonaws.com/[key]
-            // 2. https://[bucketName].s3.amazonaws.com/[key]
 
-            // Path style: DEPRECATED
-            // 3. http://s3.[regionName].amazonaws.com/[bucketName]/[key]
-            string publicUrl = string.Empty;
-            if (useRegion)
+            var response = await S3Client.ListObjectsV2Async(new ListObjectsV2Request()
             {
-                publicUrl = $"https://{bucketName}.s3.{_config.GetSection("AWS").GetValue<string>("Region")}.amazonaws.com/{key}";
-            }
-            else
+                BucketName = videoRequestModel.BucketName,
+                MaxKeys = 10,
+                Prefix = videoRequestModel.BucketFolder
+            });
+
+            var Videos = new List<VideoData>();
+            foreach (var obj in response.S3Objects)
             {
-                publicUrl = $"https://{bucketName}.s3.ap-south-1.amazonaws.com/{key}";
+                var data = new VideoData()
+                {
+                    Key = obj.Key,
+                    Size = obj.Size,
+                    LastModified = obj.LastModified
+                };
+                Videos.Add(data);
             }
-            return publicUrl;
+
+            return new GetAllVideosResponseModel()
+            {
+                Videos = Videos
+            };
+
+        }
+
+        public async Task<GetVideoDetailsResponseModel> GetVideoDetails(GetVideoDetailsRequestModel videoRequestModel)
+        {
+            var response = await S3Client.GetObjectAsync(videoRequestModel.BucketName, videoRequestModel.Key);
+
+            // await response.WriteResponseStreamToFileAsync($"{filePath}\\{objectName}", true, System.Threading.CancellationToken.None);
+
+            var details = new GetVideoDetailsResponseModel()
+            {
+                Key = response.Key,
+                LastModified = response.LastModified,
+                Size = response.ContentLength
+            };
+
+
+            return details;
         }
     }
 }
