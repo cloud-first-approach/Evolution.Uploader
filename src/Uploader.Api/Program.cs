@@ -13,6 +13,7 @@ using Amazon.S3.Transfer;
 using Google.Api;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Http.Features;
+using Uploader.Api.AppSettings;
 
 Log.Logger = new LoggerConfiguration().MinimumLevel
                .Debug()
@@ -69,11 +70,17 @@ builder.Services.AddHttpClient();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers().AddDapr();
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddOptions<AuthSettings>().BindConfiguration("AuthSettings");
+builder.Services.AddOptions<StorageSettings>().BindConfiguration("StorageSettings");
+
 builder.Services.AddScoped<IStorageService, StorageService>();
 
 builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
 builder.Services.AddAWSService<IAmazonS3>();
 builder.Services.AddTransient<TransferUtility>();
+
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 
