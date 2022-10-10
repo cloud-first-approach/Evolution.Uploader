@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using System.Security.AccessControl;
 using Amazon.Runtime;
 using Microsoft.AspNetCore.Hosting;
+using Amazon;
 
 namespace Uploader.Api.Services
 {
@@ -113,7 +114,7 @@ namespace Uploader.Api.Services
         {
             if (webHostEnvironment.IsProduction() && Environment.GetEnvironmentVariable("AWS_ACCESS_KEY") != null)
             {
-                S3Client = new AmazonS3Client(Environment.GetEnvironmentVariable("AWS_ACCESS_KEY"), Environment.GetEnvironmentVariable("AWS_SECRET_KEY"));
+                S3Client = new AmazonS3Client(Environment.GetEnvironmentVariable("AWS_ACCESS_KEY"), Environment.GetEnvironmentVariable("AWS_SECRET_KEY"),RegionEndpoint.APSouth1);
             }
             else
             {
