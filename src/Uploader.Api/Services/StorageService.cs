@@ -8,6 +8,8 @@ using Microsoft.Extensions.Options;
 using Amazon.S3.Model;
 using Microsoft.Extensions.Logging;
 using System.Security.AccessControl;
+using Amazon.Runtime;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Uploader.Api.Services
 {
@@ -15,15 +17,15 @@ namespace Uploader.Api.Services
     {
         private readonly TransferUtility _transferUtility;
         private readonly ILogger<StorageService> _logger;
-
+        private readonly IWebHostEnvironment webHostEnvironment;
 
         IAmazonS3 S3Client { get; set; }
-        public StorageService(IAmazonS3 s3Client, TransferUtility transferUtility, IConfiguration configuration, ILogger<StorageService> logger)
+        public StorageService(IAmazonS3 s3Client, TransferUtility transferUtility, IConfiguration configuration, ILogger<StorageService> logger, IWebHostEnvironment webHostEnvironment)
         {
             S3Client = s3Client;
             _transferUtility = transferUtility;
             _logger = logger;
-
+            this.webHostEnvironment = webHostEnvironment;
         }
         public async Task SaveVideo(UploadVideoRequestModel videoRequestModel)
         {
@@ -109,6 +111,15 @@ namespace Uploader.Api.Services
 
         public async Task<GetVideoDetailsResponseModel> GetVideoDetails(GetVideoDetailsRequestModel videoRequestModel)
         {
+            if (webHostEnvironment.IsProduction() && Environment.GetEnvironmentVariable("AWS_ACCESS_KEY") != null)
+            {
+                S3Client = new AmazonS3Client(Environment.GetEnvironmentVariable("AWS_ACCESS_KEY"), Environment.GetEnvironmentVariable("AWS_SECRET_KEY"));
+            }
+            else
+            {
+                _logger.LogInformation("No Access KEy found");
+            }
+
             var response = await S3Client.GetObjectAsync(videoRequestModel.BucketName, videoRequestModel.Key);
 
             // await response.WriteResponseStreamToFileAsync($"{filePath}\\{objectName}", true, System.Threading.CancellationToken.None);

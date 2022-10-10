@@ -19,6 +19,7 @@ spec:
       containers:
       - name: uploader-api
         image: rohitrustagi007/evo_uploader:latest
+        imagePullPolicy: Always
         env: 
           - name: ASPNETCORE_ENVIRONMENT
             value: "Production" 
