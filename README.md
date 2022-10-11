@@ -13,20 +13,19 @@ dapr run --app-port 2000 --app-id uploader --app-protocol http --dapr-http-port 
 ### Getting Started
 ```sh
 
-#STEP 1
-kind create cluster
-
-#STEP 2
-dapr init -k
-
-#STEP 3
-
 
 #STEP 4 (Redis)
 
 > helm repo add bitnami https://charts.bitnami.com/bitnami
 > helm repo update
 > helm install redis bitnami/redis --set image.tag=6.2
+
+#Windows
+kubectl get secret --namespace default redis -o jsonpath="{.data.redis-password}" > encoded.b64
+
+#Linux
+kubectl get secret --namespace default redis -o jsonpath="{.data.redis-password}" | base64 --decode
+
 
 #STEP 4 (step infra on kubernetes)
 kubectl apply -k deploy/k8s/infra/overlays/dev
