@@ -13,20 +13,19 @@ dapr run --app-port 2000 --app-id uploader --app-protocol http --dapr-http-port 
 ### Getting Started
 ```sh
 
-#STEP 1
-kind create cluster
-
-#STEP 2
-dapr init -k
-
-#STEP 3
-kubectl create secret generic mssql --from-literal=SA_PASSWORD="password@1" -n evolution
 
 #STEP 4 (Redis)
 
 > helm repo add bitnami https://charts.bitnami.com/bitnami
 > helm repo update
 > helm install redis bitnami/redis --set image.tag=6.2
+
+#Windows
+kubectl get secret --namespace default redis -o jsonpath="{.data.redis-password}" > encoded.b64
+
+#Linux
+kubectl get secret --namespace default redis -o jsonpath="{.data.redis-password}" | base64 --decode
+
 
 #STEP 4 (step infra on kubernetes)
 kubectl apply -k deploy/k8s/infra/overlays/dev
@@ -83,19 +82,3 @@ fluxctl sync --k8s-fwd-ns flux-system
 fluxctl policy -w default:deployment/example-deploy --tag "example-app=1.0.*"
 
 ```
-# ArgoCD
-
-```
-
-kubectl create namespace argocd
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-
-
-
-
-kubectl port-forward svc/argocd-server -n argocd 8080:443
-
-kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
-
-
-```sh

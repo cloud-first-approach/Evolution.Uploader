@@ -1,17 +1,17 @@
-GET https://example.com/comments?page=2&pageSize=10
+GET https://acme.com/comments?page=2&pageSize=10
 
 ###
 
-GET https://example.com/topics/1 HTTP/1.1
+GET https://acme.com/topics/1 HTTP/1.1
 
 
 ###
-GET https://httpbin.org/basic-auth/user/passwd HTTP/1.1
-Authorization: Basic user:passwd
+GET http://acme.com/uploads/video?key=files/emf3dwde.sx2.mp4 HTTP/1.1
+
 
 ###
 
-POST https://example.com/comments HTTP/1.1
+POST https://acme.com/comments HTTP/1.1
 content-type: application/json
 
 {
