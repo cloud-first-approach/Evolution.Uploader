@@ -27,6 +27,14 @@ namespace Uploader.Api.Services
             _transferUtility = transferUtility;
             _logger = logger;
             this.webHostEnvironment = webHostEnvironment;
+            if (webHostEnvironment.IsProduction() && Environment.GetEnvironmentVariable("AWS_ACCESS_KEY") != null)
+            {
+                S3Client = new AmazonS3Client(Environment.GetEnvironmentVariable("AWS_ACCESS_KEY"), Environment.GetEnvironmentVariable("AWS_SECRET_KEY"),RegionEndpoint.APSouth1);
+            }
+            else
+            {
+                _logger.LogInformation("No Access Key found");
+            }
         }
         public async Task SaveVideo(UploadVideoRequestModel videoRequestModel)
         {
@@ -112,15 +120,6 @@ namespace Uploader.Api.Services
 
         public async Task<GetVideoDetailsResponseModel> GetVideoDetails(GetVideoDetailsRequestModel videoRequestModel)
         {
-            if (webHostEnvironment.IsProduction() && Environment.GetEnvironmentVariable("AWS_ACCESS_KEY") != null)
-            {
-                S3Client = new AmazonS3Client(Environment.GetEnvironmentVariable("AWS_ACCESS_KEY"), Environment.GetEnvironmentVariable("AWS_SECRET_KEY"),RegionEndpoint.APSouth1);
-            }
-            else
-            {
-                _logger.LogInformation("No Access KEy found");
-            }
-
             var response = await S3Client.GetObjectAsync(videoRequestModel.BucketName, videoRequestModel.Key);
 
             // await response.WriteResponseStreamToFileAsync($"{filePath}\\{objectName}", true, System.Threading.CancellationToken.None);
