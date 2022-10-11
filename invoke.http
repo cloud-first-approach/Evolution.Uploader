@@ -1,0 +1,20 @@
+GET https://acme.com/comments?page=2&pageSize=10
+
+###
+
+GET https://acme.com/topics/1 HTTP/1.1
+
+
+###
+GET http://acme.com/uploads/video?key=files/emf3dwde.sx2.mp4 HTTP/1.1
+
+
+###
+
+POST https://acme.com/comments HTTP/1.1
+content-type: application/json
+
+{
+    "name": "sample",
+    "time": "Wed, 21 Oct 2015 18:27:50 GMT"
+}
