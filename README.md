@@ -20,7 +20,7 @@ kind create cluster
 dapr init -k
 
 #STEP 3
-kubectl create secret generic mssql --from-literal=SA_PASSWORD="password@1" -n evolution
+
 
 #STEP 4 (Redis)
 
@@ -83,19 +83,3 @@ fluxctl sync --k8s-fwd-ns flux-system
 fluxctl policy -w default:deployment/example-deploy --tag "example-app=1.0.*"
 
 ```
-# ArgoCD
-
-```
-
-kubectl create namespace argocd
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-
-
-
-
-kubectl port-forward svc/argocd-server -n argocd 8080:443
-
-kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
-
-
-```sh
