@@ -14,6 +14,7 @@ using Google.Api;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Http.Features;
 using Uploader.Api.AppSettings;
+using Amazon.Extensions.NETCore.Setup;
 
 Log.Logger = new LoggerConfiguration().MinimumLevel
                .Debug()

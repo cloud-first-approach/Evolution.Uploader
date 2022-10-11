@@ -19,11 +19,11 @@ spec:
           service:
             name: uploader-api-cluster-ip
             port: 
-              number: 80
+              number: 2001
       - path: /swagger
         pathType: Prefix
         backend:
           service:
             name: uploader-api-cluster-ip
             port: 
-              number: 80
+              number: 2001
