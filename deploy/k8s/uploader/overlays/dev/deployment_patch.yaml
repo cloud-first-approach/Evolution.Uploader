@@ -1,0 +1,24 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: uploader-api-deployment
+  namespace: evolution
+spec:
+  selector:
+    matchLabels:
+      app: uploader-api
+  replicas: 2
+  template:
+    metadata:
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "identity"
+        dapr.io/app-port: "80"
+        #dapr.io/config: "tracing"
+    spec:
+      containers:
+        - name: uploader-api
+          env: 
+          - name: ASPNETCORE_ENVIRONMENT
+            value: "Development" 
+    

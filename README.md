@@ -38,14 +38,13 @@ dapr run --app-port 2000 --app-id uploader --app-protocol http --dapr-http-port 
 #from https://github.com/cloud-first-approach/Evolution.infra/tree/main/deploy/k8s/infra/overlays/dev
 kubectl apply -k deploy/k8s/infra/overlays/dev
 
-#deploy the service
-kubectl apply -f deploy/k8s/services
+kubectl apply -k deploy/k8s/uploader/overlays/dev
 
 #check port-forward 
 kubectl port-forward svc/uploader-api-cluster-ip 80 -n evolution
 
 #deploy the service
-kubectl delete -f deploy/k8s/services
+kubectl delete -k deploy/k8s/uploader/overlays/dev
 
 #deploy the service
 kubectl delete -k deploy/k8s/infra/overlays/dev
