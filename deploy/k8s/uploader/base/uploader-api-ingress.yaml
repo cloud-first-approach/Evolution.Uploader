@@ -11,7 +11,7 @@ metadata:
     name: uploader-ingress
 spec:
   rules:
-  - host: acme.com
+  - host: uploader.k8
     http:
       paths:
       - path: /uploads
