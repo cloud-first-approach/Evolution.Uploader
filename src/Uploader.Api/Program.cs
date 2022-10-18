@@ -110,7 +110,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.UseJwtParser();
+//app.UseJwtParser();
 
 app.MapControllers();
 
