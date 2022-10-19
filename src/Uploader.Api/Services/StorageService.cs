@@ -33,7 +33,7 @@ namespace Uploader.Api.Services
             }
             else
             {
-                _logger.LogInformation("No Access Key found");
+                S3Client = new AmazonS3Client(Environment.GetEnvironmentVariable("AWS_ACCESS_KEY"), Environment.GetEnvironmentVariable("AWS_SECRET_KEY"),RegionEndpoint.APSouth1);
             }
         }
         public async Task SaveVideo(UploadVideoRequestModel videoRequestModel)
