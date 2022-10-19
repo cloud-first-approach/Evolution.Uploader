@@ -14,7 +14,6 @@ spec:
     metadata:
       labels:
         app: uploader-api
-    
     spec:
       containers:
       - name: uploader-api

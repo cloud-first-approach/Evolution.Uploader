@@ -22,5 +22,5 @@ spec:
           service:
             name: uploader-api-cluster-ip
             port: 
-              number: 2001
+              number: 80
 

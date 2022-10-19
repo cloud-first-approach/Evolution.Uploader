@@ -10,5 +10,5 @@ spec:
   ports:
   - name: uploader-api-port
     protocol: TCP
-    port: 2001
+    port: 80
     targetPort: 80
