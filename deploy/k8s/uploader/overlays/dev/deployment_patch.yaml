@@ -1,0 +1,37 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: uploader-api-deployment
+  namespace: evolution
+spec:
+  selector:
+    matchLabels:
+      app: uploader-api
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "uploader"
+        dapr.io/app-port: "80"
+        #dapr.io/config: "tracing"
+    spec:
+      containers:
+        - name: uploader-api
+          env: 
+          - name: ASPNETCORE_ENVIRONMENT
+            value: "Development"
+          - name: AWS_ACCESS_KEY
+            valueFrom: 
+              secretKeyRef:
+                name: access 
+                key: AWS_ACCESS_KEY
+          - name: AWS_SECRET_KEY
+            valueFrom: 
+              secretKeyRef:
+                name: secret 
+                key: AWS_SECRET_KEY 
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m" 

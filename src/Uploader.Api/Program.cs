@@ -15,6 +15,10 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Http.Features;
 using Uploader.Api.AppSettings;
 using Amazon.Extensions.NETCore.Setup;
+using Dapr.Client;
+using Dapr.Extensions.Configuration;
+
+var daprClient = new DaprClientBuilder().Build();
 
 Log.Logger = new LoggerConfiguration().MinimumLevel
                .Debug()
@@ -47,7 +51,15 @@ builder.Host.UseMetricsWebTracking()
                             endpointOption.EnvironmentInfoEndpointEnabled = false;
                         };
                     }
-                );
+                )
+                .ConfigureAppConfiguration(config =>
+                {
+                    // Get the initial value from the configuration component.
+                    config.AddDaprConfigurationStore("configstore", new List<string>() { "orderId1", "orderId2" }, daprClient, TimeSpan.FromSeconds(20));
+
+                    // Watch the keys in the configuration component and update it in local configurations.
+                    config.AddStreamingDaprConfigurationStore("configstore", new List<string>() { "orderId1", "orderId2" }, daprClient, TimeSpan.FromSeconds(20));
+                });
 
 // Add services to the container.
 
@@ -90,13 +102,15 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    Console.WriteLine(app.Configuration.GetValue<string>("orderId1"));
 }
 
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.UseJwtParser();
+//app.UseJwtParser();
 
 app.MapControllers();
 
