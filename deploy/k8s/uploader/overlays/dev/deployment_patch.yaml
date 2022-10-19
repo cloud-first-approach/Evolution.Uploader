@@ -14,6 +14,9 @@ spec:
         dapr.io/enabled: "true"
         dapr.io/app-id: "uploader"
         dapr.io/app-port: "80"
+        dapr.io/log-level: "debug"
+        dapr.io/sidecar-liveness-probe-delay-seconds: "10"
+        dapr.io/sidecar-readiness-probe-delay-seconds: "10"
         #dapr.io/config: "tracing"
     spec:
       containers:
