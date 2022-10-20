@@ -20,6 +20,9 @@ docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=password@1" -p 1433:1433 --name sq
 # Local development and migrations
 
 ```sh
+
+
+
 dotnet ef migrations add InitialCreate
 dotnet ef database update InitialCreate
 
@@ -29,7 +32,7 @@ docker build .
 
 # Run locally using dapr
 ```sh
-dapr run --app-port 2000 --app-id uploader --app-protocol http --dapr-http-port 2501 --components-path ../../dapr/components -- dotnet run
+dapr run --app-ssl --app-port 2000 --app-id uploader --app-protocol http --dapr-http-port 2501 --components-path ../../dapr/components -- dotnet run
 ```
 
 # Run in K8s
