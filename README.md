@@ -32,7 +32,10 @@ docker build .
 
 # Run locally using dapr
 ```sh
-dapr run --app-ssl --app-port 2000 --app-id uploader --app-protocol http --dapr-http-port 2501 --components-path ../../dapr/components -- dotnet run
+dapr run --app-ssl --app-port 2000 --app-id uploader --app-protocol http --dapr-http-port 2500 --components-path ../../dapr/components -- dotnet run
+
+dapr run --app-port 2000 --app-id uploader --app-protocol http --dapr-http-port 2500 --components-path ../../dapr/components -- dotnet run
+
 ```
 
 # Run in K8s
