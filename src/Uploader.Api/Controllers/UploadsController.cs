@@ -25,23 +25,28 @@ namespace Uploader.Api.Controllers
             _daprClient = daprClient;
             _storageSettings = storageSettings.Value;
         }
-
-        [HttpGet(Name = "GetAllUploadedVideos")]
+        
+        [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var response = await _storageService.GetAllVideos(new Services.Models.GetAllVideosRequestModel());
+            var response = await _storageService.GetAllVideos(new Services.Models.GetAllVideosRequestModel(){
+                 BucketName = "evolution-video-uploads",
+                 BucketFolder ="files"   
+
+            });
             return Ok(response);
         }
 
         [Route("video")]
-        [HttpGet(Name = "GetVideoDetail")]
-        public async Task<IActionResult> Get([FromQuery] string key)
+        [HttpGet]
+        public async Task<IActionResult> Get([FromQuery] string key, [FromQuery] string bucketName)
         {
-            var response = await _storageService.GetVideoDetails(new Services.Models.GetVideoDetailsRequestModel() { Key = key,BucketName = _storageSettings.BucketName });
+            var response = await _storageService.GetVideoDetails(new Services.Models.GetVideoDetailsRequestModel() { Key = key,BucketName = bucketName});
             return Ok(response);
         }
-
-        [HttpPost(Name = "SaveVideo")]
+        
+        [Route("video")]
+        [HttpPost]
         public async Task<IActionResult> Post([FromForm] UploadVideoRequestModel uploadVideoRequest)
         {
             if (!Validations.IsValidVideoFile(uploadVideoRequest.File))

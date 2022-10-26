@@ -55,10 +55,10 @@ builder.Host.UseMetricsWebTracking()
                 .ConfigureAppConfiguration(config =>
                 {
                     // Get the initial value from the configuration component.
-                    config.AddDaprConfigurationStore("configstore", new List<string>() { "orderId1", "orderId2" }, daprClient, TimeSpan.FromSeconds(20));
+                    // config.AddDaprConfigurationStore("configstore", new List<string>() { "orderId1", "orderId2" }, daprClient, TimeSpan.FromSeconds(20));
 
                     // Watch the keys in the configuration component and update it in local configurations.
-                    config.AddStreamingDaprConfigurationStore("configstore", new List<string>() { "orderId1", "orderId2" }, daprClient, TimeSpan.FromSeconds(20));
+                    // config.AddStreamingDaprConfigurationStore("configstore", new List<string>() { "orderId1", "orderId2" }, daprClient, TimeSpan.FromSeconds(20));
                 });
 
 // Add services to the container.
