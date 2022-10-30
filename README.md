@@ -34,7 +34,8 @@ docker build .
 ```sh
 dapr run --app-ssl --app-port 2000 --app-id uploader --app-protocol http --dapr-http-port 2500 --components-path ../../dapr/components -- dotnet run
 
-dapr run --app-port 2000 --app-id uploader --app-protocol http --dapr-http-port 2500 --components-path ../../dapr/components -- dotnet run
+cd Evolution.Uploader/src/Uploader.Api
+dapr run --app-port 2000 --app-id uploader --dapr-http-port 2500 --components-path ../../dapr/components -- dotnet run
 
 ```
 
