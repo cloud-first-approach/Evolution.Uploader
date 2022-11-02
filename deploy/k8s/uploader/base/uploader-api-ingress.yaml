@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: uploader-ingress
-  namespace: evolution
+  namespace: ingress-nginx
   annotations: 
       # kubernetes.io/ingress.class: nginx
       nginx.ingress.kubernetes.io/use-regex: 'true'
@@ -20,7 +20,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: uploader-api-cluster-ip
+            name: uploader-dapr
             port: 
               number: 80
 

@@ -32,8 +32,8 @@ namespace Uploader.Api.Controllers
             var response = await _storageService.GetAllVideos(new Services.Models.GetAllVideosRequestModel(){
                  BucketName = "evolution-video-uploads",
                  BucketFolder ="files"   
-
             });
+            _logger.LogInformation(response.Videos[0].Key);
             return Ok(response);
         }
 
