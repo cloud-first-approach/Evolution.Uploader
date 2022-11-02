@@ -106,7 +106,7 @@ if (app.Environment.IsDevelopment())
     Console.WriteLine(app.Configuration.GetValue<string>("orderId1"));
 }
 
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
