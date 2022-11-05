@@ -17,7 +17,7 @@ spec:
         dapr.io/log-level: "debug"
         dapr.io/sidecar-liveness-probe-delay-seconds: "10"
         dapr.io/sidecar-readiness-probe-delay-seconds: "10"
-        #dapr.io/config: "tracing"
+        dapr.io/config: "tracing"
     spec:
       containers:
         - name: uploader-api
