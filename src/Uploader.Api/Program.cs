@@ -94,6 +94,7 @@ builder.Services.AddAWSService<IAmazonS3>();
 builder.Services.AddTransient<TransferUtility>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
@@ -113,5 +114,6 @@ app.UseAuthorization();
 //app.UseJwtParser();
 
 app.MapControllers();
-
+app.UseHealthChecks("/health");
+app.UseHealthChecks("/healthz");
 app.Run();

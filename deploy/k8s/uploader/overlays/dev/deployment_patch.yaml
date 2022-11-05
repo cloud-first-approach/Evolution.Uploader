@@ -18,6 +18,7 @@ spec:
         dapr.io/sidecar-liveness-probe-delay-seconds: "10"
         dapr.io/sidecar-readiness-probe-delay-seconds: "10"
         dapr.io/config: "tracing"
+        linkerd.io/inject: enabled
     spec:
       containers:
         - name: uploader-api
