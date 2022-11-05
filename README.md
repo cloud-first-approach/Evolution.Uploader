@@ -48,7 +48,7 @@ kubectl apply -k deploy/k8s/infra/overlays/dev
 kubectl apply -k deploy/k8s/uploader/overlays/dev
 
 #check port-forward 
-kubectl port-forward svc/uploader-api-cluster-ip 80 -n evolution
+kubectl port-forward svc/uploader-api-cluster-ip 2000:80 -n evolution
 
 #deploy the service
 kubectl delete -k deploy/k8s/uploader/overlays/dev
