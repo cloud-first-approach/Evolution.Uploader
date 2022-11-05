@@ -50,9 +50,9 @@ jobs:
       
       - name: docker build
         run: |
-          docker build ./src/Uploader.Api -t rohitrustagi007/evo_uploader:latest
+          docker build ./src/Uploader.Api -t rohitrustagi007/evo_uploader:${{ github.run_number  }}
       
       - name : docker push
         run: |
-          docker push rohitrustagi007/evo_uploader:latest
+          docker push rohitrustagi007/evo_uploader:${{ github.run_number  }}
 
