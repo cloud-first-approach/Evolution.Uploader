@@ -1,13 +1,15 @@
 # Introduction 
 Uploader Service Api
 
-```sh
-git branch -m master main
-git fetch origin
-git branch -u origin/main main
-git remote set-head origin -a
-git pull
-```
+Identity Api uses Identity Server4 to maintain login and generate token.
+
+## Key Notes
+- The service follows the `Open Api Spec` and `REST` standards.
+- The service is configured to run using `kestrel` server on port `2000` 
+- The service exposes a health check at `/health` and `/healthz` endpoint.
+- The service exposes a swagger endpoint for `/swagger` only in `Development` env.
+- The service exposes a metric endpoint `/metricstext` for text based and `/metrics` for protobuf in `prometheus` format.
+- The service uses `dapr components`
 
 # Run sql server locally (docker)
 
@@ -21,12 +23,10 @@ docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=password@1" -p 1433:1433 --name sq
 
 ```sh
 
+#ENV VAR 
 
-
-dotnet ef migrations add InitialCreate
-dotnet ef database update InitialCreate
-
-docker build .
+AWS_ACCESS_KEY = ASDASDOQWYH128e912***
+AWS_SECRET_KEY = eytabsj3eildu23dl32ib,1i2eld23cSDASD*********
 
 ```
 
@@ -42,13 +42,14 @@ dapr run --app-port 2000 --app-id uploader --dapr-http-port 2500 --components-pa
 # Run in K8s
 ```sh
 #spin up the infra
-#from https://github.com/cloud-first-approach/Evolution.infra/tree/main/deploy/k8s/infra/overlays/dev
-kubectl apply -k deploy/k8s/infra/overlays/dev
+kubectl apply -k ./Evolution.infra/deploy/k8s/infra/overlays/dev
 
-kubectl apply -k deploy/k8s/uploader/overlays/dev
+kubectl apply -k ./Evolution.Uploader/deploy/k8s/uploader/overlays/dev
 
 #check port-forward 
 kubectl port-forward svc/uploader-api-cluster-ip 2000:80 -n evolution
+
+# DELETE
 
 #deploy the service
 kubectl delete -k deploy/k8s/uploader/overlays/dev
