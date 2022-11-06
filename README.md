@@ -1,8 +1,6 @@
 # Introduction 
 Uploader Service Api
 
-Identity Api uses Identity Server4 to maintain login and generate token.
-
 ## Key Notes
 - The service follows the `Open Api Spec` and `REST` standards.
 - The service is configured to run using `kestrel` server on port `2000` 
